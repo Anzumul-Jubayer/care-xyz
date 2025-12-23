@@ -1,7 +1,7 @@
 import { FaMapMarkerAlt, FaEnvelope, FaPhoneAlt } from "react-icons/fa";
 export default function Footer() {
   return (
-    <footer className="bg-neutral text-neutral-content mt-16">
+    <footer className="bg-neutral text-neutral-content">
       <div className="max-w-6xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
         
         <div>
