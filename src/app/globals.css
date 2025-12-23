@@ -1,2 +1,21 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+
+  --color-primary: #16a34a;      
+  --color-secondary: #0f766e;    
+  --color-accent: #facc15;       
+  --color-neutral: #1f2937;    
+  --color-base-100: #f9fafb;     
+  --color-base-200: #f3f4f6;
+  --color-base-300: #e5e7eb;
+
+  --radius-box: 1rem;
+  --radius-btn: 0.5rem;
+  --radius-badge: 0.5rem;
+}
+
+@custom-variant dark (&:where([data-theme=night], [data-theme=night] *));
