@@ -2,56 +2,100 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function Login() {
+  const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const res = await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+      redirect: false,
+    });
+
+    setLoading(false);
+
+    if (res?.error) {
+      toast.error("Invalid email or password");
+      return;
+    }
+
+    toast.success("Login successful");
+    router.push("/");
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200 px-4">
       <div className="max-w-md w-full bg-base-100 p-8 rounded-xl shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-800">
+        <h2 className="text-2xl font-bold text-center">
           Login to Care.IO
         </h2>
-        <form className="mt-6 space-y-4">
-          {/* Email */}
+
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          
           <div>
-            <label className="block text-gray-700 font-semibold mb-1">
-              Email
-            </label>
+            <label className="block font-semibold mb-1">Email</label>
             <input
               type="email"
+              name="email"
+              required
+              onChange={handleChange}
               placeholder="Enter your email"
               className="w-full input input-bordered"
             />
           </div>
 
-          {/* Password */}
+          
           <div>
-            <label className="block text-gray-700 font-semibold mb-1">
-              Password
-            </label>
+            <label className="block font-semibold mb-1">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
+                name="password"
+                required
+                onChange={handleChange}
                 placeholder="Enter your password"
-                className="w-full input input-bordered pr-12"
+                className="w-full input input-bordered pr-14"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-sm"
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
             </div>
           </div>
 
-          {/* Login Button */}
-          <button className="w-full btn btn-primary mt-4">Login</button>
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full btn btn-primary"
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
         </form>
-        {/* Optional Links */}
-        
-        <p className="mt-4 text-center text-gray-600 text-sm">
+
+        <p className="mt-4 text-center text-sm">
           Don't have an account?{" "}
           <Link href="/register" className="text-primary font-semibold">
             Register
