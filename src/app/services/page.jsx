@@ -2,6 +2,7 @@
 
 import Loading from "@/Components/Loading";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function ServicesPage() {
   const [services, setServices] = useState([]);
@@ -25,13 +26,14 @@ export default function ServicesPage() {
   if (loading) return <Loading />;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10 cursor-pointer">
+    <div className="max-w-6xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold text-center mb-8">Our Services</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((service) => (
-          <div
+          <Link
             key={service._id}
-            className="border rounded-lg p-4 shadow hover:shadow-lg transition"
+            href={`/services/${service._id}`} 
+            className="border rounded-lg p-4 shadow hover:shadow-lg transition cursor-pointer"
           >
             <img
               src={service.image}
@@ -44,7 +46,6 @@ export default function ServicesPage() {
                 ? service.description.slice(0, 80) + "..."
                 : service.description}
             </p>
-
             <div className="flex justify-between items-center mt-4">
               <span className="font-bold">
                 ${service.price}/{service.duration}
@@ -53,7 +54,7 @@ export default function ServicesPage() {
                 {service.rating} ⭐
               </span>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
