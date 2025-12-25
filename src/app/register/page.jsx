@@ -1,76 +1,147 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function Register() {
+  const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const validatePassword = (pwd) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
-    return regex.test(pwd);
-  };
+  const [formData, setFormData] = useState({
+    nid: "",
+    name: "",
+    email: "",
+    contact: "",
+  });
+
+  // password 
+  const validatePassword = (pwd) =>
+    /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(pwd);
 
   const handlePasswordChange = (e) => {
     const pwd = e.target.value;
     setPassword(pwd);
+
     if (!validatePassword(pwd)) {
       setError(
-        "Password must be at least 6 characters long and contain at least one uppercase and one lowercase letter."
+        "Password must be at least 6 characters with 1 uppercase & 1 lowercase"
       );
     } else {
       setError("");
     }
   };
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (error) return;
+
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message);
+        setLoading(false);
+        return;
+      }
+
+      toast.success("Registration successful! Please login.");
+      router.push("/");
+    } catch (err) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200 px-4">
       <div className="max-w-md w-full bg-base-100 p-8 rounded-xl shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-800">
-          Register for Care.IO
-        </h2>
+        <h2 className="text-2xl font-bold text-center">Register for Care.IO</h2>
 
-        <form className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           {/* NID */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1">NID No</label>
-            <input type="text" placeholder="Enter your NID" className="w-full input input-bordered" />
+            <label className="block font-semibold mb-1">NID</label>
+            <input
+              name="nid"
+              required
+              onChange={handleChange}
+              className="w-full input input-bordered"
+              placeholder="Enter your NID"
+            />
           </div>
 
           {/* Name */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1">Name</label>
-            <input type="text" placeholder="Enter your name" className="w-full input input-bordered" />
+            <label className="block font-semibold mb-1">Name</label>
+            <input
+              name="name"
+              required
+              onChange={handleChange}
+              className="w-full input input-bordered"
+              placeholder="Enter your name"
+            />
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1">Email</label>
-            <input type="email" placeholder="Enter your email" className="w-full input input-bordered" />
+            <label className="block font-semibold mb-1">Email</label>
+            <input
+              name="email"
+              type="email"
+              required
+              onChange={handleChange}
+              className="w-full input input-bordered"
+              placeholder="Enter your email"
+            />
           </div>
 
           {/* Contact */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1">Contact</label>
-            <input type="text" placeholder="Enter your contact number" className="w-full input input-bordered" />
+            <label className="block font-semibold mb-1">Contact</label>
+            <input
+              name="contact"
+              required
+              onChange={handleChange}
+              className="w-full input input-bordered"
+              placeholder="Enter your contact number"
+            />
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1">Password</label>
+            <label className="block font-semibold mb-1">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                className="w-full input input-bordered pr-12"
                 value={password}
+                required
                 onChange={handlePasswordChange}
+                className="w-full input input-bordered pr-14"
+                placeholder="Enter your password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-sm"
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
@@ -78,18 +149,20 @@ export default function Register() {
             {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
           </div>
 
-          {/* Register Button */}
-          <button className="w-full btn btn-primary mt-4" type="submit">
-            Register
+          <button
+            className="w-full btn btn-primary"
+            type="submit"
+            disabled={loading || !!error}
+          >
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
-        {/* Optional Links */}
-        <p className="mt-4 text-center text-gray-600 text-sm">
+        <p className="mt-4 text-center text-sm">
           Already have an account?{" "}
-          <a href="/login" className="text-primary font-semibold">
+          <Link href="/login" className="text-primary font-semibold">
             Login
-          </a>
+          </Link>
         </p>
       </div>
     </div>

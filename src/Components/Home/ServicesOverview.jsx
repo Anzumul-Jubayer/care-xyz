@@ -20,14 +20,14 @@ const services = [
 
 export default function ServicesOverview() {
   return (
-    <section className="py-16 bg-base-200">
+    <section className="py-16 bg-base-200 ">
       <div className="max-w-6xl mx-auto px-6 text-center">
         <h2 className="text-3xl font-bold text-primary">Our Services</h2>
         <p className="mt-4 text-gray-700">
           We provide reliable and trusted care services for your loved ones.
         </p>
 
-        <div className="mt-10 grid gap-8 md:grid-cols-3">
+        <div className="mt-10 grid gap-8 md:grid-cols-3 cursor-pointer">
           {services.map((service) => (
             <div
               key={service.name}
