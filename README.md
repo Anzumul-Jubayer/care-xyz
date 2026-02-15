@@ -132,4 +132,4 @@ For any questions or support, please reach out to the development team.
 
 ---
 
-Made with ❤️ by the Care.IO Team
+
