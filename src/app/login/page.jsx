@@ -21,6 +21,14 @@ export default function Login() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const fillDemoCredentials = () => {
+    setFormData({
+      email: "rahim@gmail.com",
+      password: "Rahim123",
+    });
+    toast.success("Demo credentials filled!");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -57,6 +65,7 @@ export default function Login() {
               type="email"
               name="email"
               required
+              value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
               className="w-full input input-bordered"
@@ -71,6 +80,7 @@ export default function Login() {
                 type={showPassword ? "text" : "password"}
                 name="password"
                 required
+                value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter your password"
                 className="w-full input input-bordered pr-14"
@@ -92,6 +102,14 @@ export default function Login() {
             className="w-full btn btn-primary"
           >
             {loading ? "Logging in..." : "Login"}
+          </button>
+
+          <button
+            type="button"
+            onClick={fillDemoCredentials}
+            className="w-full btn btn-outline btn-secondary"
+          >
+            Use Demo Credentials
           </button>
         </form>
 

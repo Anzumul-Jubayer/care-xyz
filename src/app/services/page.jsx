@@ -26,33 +26,58 @@ export default function ServicesPage() {
   if (loading) return <Loading />;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-center mb-8">Our Services</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold mb-3">Our Services</h1>
+        <p className="text-base-content/70 max-w-2xl mx-auto">
+          Professional care services tailored to your needs
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {services.map((service) => (
           <Link
             key={service._id}
-            href={`/services/${service._id}`} 
-            className="border rounded-lg p-4 shadow hover:shadow-lg transition cursor-pointer"
+            href={`/services/${service._id}`}
+            className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group overflow-hidden"
           >
-            <img
-              src={service.image}
-              alt={service.name}
-              className="w-full h-40 object-cover rounded"
-            />
-            <h2 className="text-xl font-semibold mt-4">{service.name}</h2>
-            <p className="mt-2 text-gray-600">
-              {service.description.length > 80
-                ? service.description.slice(0, 80) + "..."
-                : service.description}
-            </p>
-            <div className="flex justify-between items-center mt-4">
-              <span className="font-bold">
-                ${service.price}/{service.duration}
-              </span>
-              <span className="bg-green-100 text-green-700 px-2 py-1 rounded">
+            <figure className="relative h-56 overflow-hidden">
+              <img
+                src={service.image}
+                alt={service.name}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+              />
+              <div className="absolute top-4 right-4 badge badge-primary badge-lg font-semibold shadow-lg">
                 {service.rating} ⭐
-              </span>
+              </div>
+            </figure>
+
+            <div className="card-body">
+              <h2 className="card-title text-2xl group-hover:text-primary transition-colors">
+                {service.name}
+              </h2>
+              
+              <p className="text-base-content/70 line-clamp-3 min-h-[4.5rem]">
+                {service.description}
+              </p>
+
+              <div className="card-actions justify-between items-center mt-4 pt-4 border-t border-base-300">
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-primary">
+                    ${service.price}
+                  </span>
+                  <span className="text-sm text-base-content/60">
+                    per {service.duration}
+                  </span>
+                </div>
+                
+                <button className="btn btn-primary btn-sm group-hover:btn-accent transition-colors">
+                  View Details
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </Link>
         ))}

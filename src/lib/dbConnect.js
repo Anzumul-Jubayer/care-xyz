@@ -21,6 +21,7 @@ export const collections = {
   users: "users",
   services: "services",
   bookings: "bookings",
+  locations:"locations",
   payments: "payments",
 };
 
