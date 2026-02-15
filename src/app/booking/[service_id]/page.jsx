@@ -1,31 +1,38 @@
-// app/booking/[service_id]/page.jsx
-import React from "react";
+import { dbConnect } from "@/lib/dbConnect";
+import { ObjectId } from "mongodb";
+import BookingClient from "./BookingClient";
+import PrivateRoute from "@/Components/PrivateRoute";
+import locations from "@/data/locations.json";
 
-const BookingPage = async ({ params: paramsPromise }) => {
-  // params unwrap
+export default async function BookingPage({ params: paramsPromise }) {
   const params = await paramsPromise;
-  const serviceId = params.service_id;
+  const { service_id } = params;
 
-  console.log("Service ID:", serviceId);
+  const servicesCollection = await dbConnect("services");
+  const service = await servicesCollection.findOne({ _id: new ObjectId(service_id) });
 
-  const res = await fetch(`http://localhost:3000/api/services/${serviceId}`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    console.log("Fetch error:", res.status, await res.text());
-    return <div>Error fetching service</div>;
+  if (!service) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Service not found</h2>
+          <a href="/services" className="btn btn-primary">
+            Back to Services
+          </a>
+        </div>
+      </div>
+    );
   }
 
-  const service = await res.json();
-  console.log("Service data:", service);
+  // Convert ObjectId to string for client component
+  const serviceData = {
+    ...service,
+    _id: service._id.toString(),
+  };
 
   return (
-    <div>
-      <h1>Booking Service: {service.name}</h1>
-      <p>Service ID: {serviceId}</p>
-    </div>
+    <PrivateRoute>
+      <BookingClient service={serviceData} locations={locations} />
+    </PrivateRoute>
   );
-};
-
-export default BookingPage;
+}

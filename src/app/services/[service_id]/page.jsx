@@ -2,11 +2,65 @@ import { dbConnect } from "@/lib/dbConnect";
 import { ObjectId } from "mongodb";
 import Link from "next/link";
 
+// Generate metadata for the service detail page
+export async function generateMetadata({ params: paramsPromise }) {
+  const params = await paramsPromise;
+  const { service_id } = params;
+
+  try {
+    const servicesCollection = await dbConnect("services");
+    const service = await servicesCollection.findOne({ _id: new ObjectId(service_id) });
+
+    if (!service) {
+      return {
+        title: "Service Not Found - Care.IO",
+        description: "The requested service could not be found.",
+      };
+    }
+
+    return {
+      title: `${service.name} - Care.IO`,
+      description: service.description,
+      keywords: [service.name, "care service", "home care", "professional caregivers", "healthcare"],
+      openGraph: {
+        title: `${service.name} - Care.IO`,
+        description: service.description,
+        type: "website",
+        url: `https://care-io.com/services/${service_id}`,
+        siteName: "Care.IO",
+        images: [
+          {
+            url: service.image,
+            width: 1200,
+            height: 630,
+            alt: service.name,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${service.name} - Care.IO`,
+        description: service.description,
+        images: [service.image],
+      },
+      alternates: {
+        canonical: `https://care-io.com/services/${service_id}`,
+      },
+    };
+  } catch (error) {
+    console.error("Error generating metadata:", error);
+    return {
+      title: "Service - Care.IO",
+      description: "Professional care services",
+    };
+  }
+}
+
 export default async function ServiceDetail({ params: paramsPromise }) {
   const params = await paramsPromise; 
   const { service_id } = params;
 
-  const servicesCollection = dbConnect("services");
+  const servicesCollection = await dbConnect("services");
   const service = await servicesCollection.findOne({ _id: new ObjectId(service_id) });
 
   if (!service) return (

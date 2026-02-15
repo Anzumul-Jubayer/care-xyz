@@ -16,24 +16,57 @@ const client = new MongoClient(uri, {
 });
 
 let db;
+let isConnecting = false;
+let isConnected = false;
 
 export const collections = {
   users: "users",
   services: "services",
   bookings: "bookings",
-  locations:"locations",
+  locations: "locations",
   payments: "payments",
 };
 
-export const dbConnect = (name) => {
-  if (!db) {
+export const dbConnect = async (name) => {
+  // If already connected, return the collection
+  if (isConnected && db) {
+    if (!collections[name]) {
+      throw new Error(`Collection ${name} not defined`);
+    }
+    return db.collection(collections[name]);
+  }
+
+  // If connection is in progress, wait for it
+  if (isConnecting) {
+    await new Promise((resolve) => {
+      const checkConnection = setInterval(() => {
+        if (isConnected) {
+          clearInterval(checkConnection);
+          resolve();
+        }
+      }, 100);
+    });
+    return db.collection(collections[name]);
+  }
+
+  // Connect to MongoDB
+  try {
+    isConnecting = true;
+    await client.connect();
     db = client.db(dbName);
+    isConnected = true;
     console.log("✅ MongoDB connected");
-  }
 
-  if (!collections[name]) {
-    throw new Error(`Collection ${name} not defined`);
-  }
+    if (!collections[name]) {
+      throw new Error(`Collection ${name} not defined`);
+    }
 
-  return db.collection(collections[name]);
+    return db.collection(collections[name]);
+  } catch (error) {
+    isConnecting = false;
+    console.error("❌ MongoDB connection error:", error);
+    throw error;
+  } finally {
+    isConnecting = false;
+  }
 };

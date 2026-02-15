@@ -1,17 +1,17 @@
+import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/dbConnect";
 
 export async function GET() {
   try {
-    const servicesCollection = dbConnect("services");
+    const servicesCollection = await dbConnect("services");
     const services = await servicesCollection.find({}).toArray();
 
-    return new Response(JSON.stringify(services), {
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(services);
   } catch (error) {
-    return new Response(JSON.stringify({ message: "Failed to fetch services" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    console.error("Error fetching services:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch services", error: error.message },
+      { status: 500 }
+    );
   }
 }

@@ -17,7 +17,7 @@ export const authOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const usersCollection = dbConnect("users");
+        const usersCollection = await dbConnect("users");
         const user = await usersCollection.findOne({
           email: credentials.email,
         });
